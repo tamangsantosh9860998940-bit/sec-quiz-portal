@@ -1,0 +1,238 @@
+[
+  {
+    "question": "A small defense contractor is setting up a new shared drive system and needs the proper controls to ensure that only those with the correct classification can access any given folder or file. Which control type would meet these requirements?",
+    "options": [
+      "Multifactor authentication",
+      "Discretionary access control",
+      "Role-based access control",
+      "Mandatory access control"
+    ],
+    "answer": "Mandatory access control"
+  },
+  {
+    "question": "During a recent audit, a company noticed a troubling trend where people had their passwords on sticky notes in their work area. The employees stated that the password policy made it too difficult to remember them. Which policy should the company change to alleviate this issue?",
+    "options": [
+      "Password reuse",
+      "Password history",
+      "Password management",
+      "Password complexity"
+    ],
+    "answer": "Password complexity"
+  },
+  {
+    "question": "Which technology replaced NT LAN Manager in Active Directory?",
+    "options": [
+      "Kerberos",
+      "Virtual Private Network",
+      "Unique security identifier",
+      "Fast IDentity Online"
+    ],
+    "answer": "Kerberos"
+  },
+  {
+    "question": "A contractor only works for a company from 9 a.m. to 12 p.m. What kind of restriction could the company set up on the contractor's account to prevent using it outside that range?",
+    "options": [
+      "Time-based restrictions",
+      "Mandatory access control",
+      "Password restrictions",
+      "Location-based restrictions"
+    ],
+    "answer": "Time-based restrictions"
+  },
+  {
+    "question": "An employee at a company frequently recycles old passwords when prompted for a password change. What feature of a password policy can prevent this?",
+    "options": [
+      "Password complexity",
+      "Password history",
+      "Password length",
+      "Password age"
+    ],
+    "answer": "Password history"
+  },
+  {
+    "question": "A company wants to set up single sign-on (SSO) without passing credentials through to each piece of software and cloud service. Which protocol would meet this requirement?",
+    "options": [
+      "Fast IDentity Online",
+      "Virtual Private Network",
+      "Kerberos",
+      "Open Authorization"
+    ],
+    "answer": "Open Authorization"
+  },
+  {
+    "question": "While developing a new security policy, the network administrator suggests removing the password age portion. Why has having a password age policy caused issues for companies? (Select the two best options.)",
+    "options": [
+      "Password age policies allow for more secure passwords.",
+      "Employees leave passwords readily accessible in their work area.",
+      "Employees choose weak passwords when they need to change them frequently.",
+      "Employees follow best practices regarding passwords."
+    ],
+    "answer": [
+      "Employees leave passwords readily accessible in their work area.",
+      "Employees choose weak passwords when they need to change them frequently."
+    ]
+  },
+  {
+    "question": "A company using Windows Server technology needs to link its Active Directory to a third-party service to allow single sign-on. Which service that uses the standard X.500 would work for the company?",
+    "options": [
+      "Lightweight Directory Access Protocol",
+      "Virtual Private Network",
+      "Local Security Authority Subsystem Service",
+      "Application Programming Interface"
+    ],
+    "answer": "Lightweight Directory Access Protocol"
+  },
+  {
+    "question": "A company is migrating its shared drives to a cloud repository service. While most drives use job titles for automated access, a few one-off project drives need a specific owner to choose who has access. Which control type would fit these one-off drives?",
+    "options": [
+      "Role-based access control",
+      "Multifactor authentication",
+      "Discretionary access control",
+      "Mandatory access control"
+    ],
+    "answer": "Discretionary access control"
+  },
+  {
+    "question": "One of the company's accountants submitted a ticket stating they could not access a particular section of the accounting software. Why might the accountant not have access to every part of the accounting software?",
+    "options": [
+      "Licensing",
+      "Mandatory access control",
+      "Least privilege",
+      "Discretionary access control"
+    ],
+    "answer": "Least privilege"
+  },
+  {
+    "question": "A recently hired information technology manager wants to implement more automation regarding the onboarding procedure. What process describes setting up accounts so a new employee can automatically access software and file shares from the human resource platform?",
+    "options": [
+      "Enabling a password reuse policy",
+      "Provisioning",
+      "Multifactor authentication",
+      "Following least privilege"
+    ],
+    "answer": "Provisioning"
+  },
+  {
+    "question": "A company needs to improve its security posture regarding credentials. Which security policy change would align with updated NIST guidelines?",
+    "options": [
+      "Single-factor authentication",
+      "Multifactor authentication",
+      "Password reuse",
+      "Password history"
+    ],
+    "answer": "Multifactor authentication"
+  },
+  {
+    "question": "An engineering firm wants to implement an authentication design that uses a framework for passwordless authentication. What statement is not accurate regarding passwordless authentication?",
+    "options": [
+      "When presented with an authentication challenge, the user performs the local gesture to unlock the private key.",
+      "The user registers with a web application or service, referred to as a relying party.",
+      "The user chooses either a roaming authenticator or a platform authenticator implemented by the device OS.",
+      "The relying party uses a private key to verify the signature and authenticate the account session."
+    ],
+    "answer": "The relying party uses a private key to verify the signature and authenticate the account session."
+  },
+  {
+    "question": "An engineer needs to develop a metrics dashboard by pulling data from the ticketing system. What technology would the engineer need from the ticketing system to complete this project?",
+    "options": [
+      "Fast IDentity Online",
+      "Application Programming Interface",
+      "Lightweight Directory Access Protocol",
+      "Virtual Private Network"
+    ],
+    "answer": "Application Programming Interface"
+  },
+  {
+    "question": "A manufacturing company recently bought another company. They need to link each company's directory systems together to access resources without merging the two. How can they link the two directory systems together?",
+    "options": [
+      "Federation",
+      "Location-based restrictions",
+      "Migration",
+      "Site-to-site VPN"
+    ],
+    "answer": "Federation"
+  },
+  {
+    "question": "Why is just having a password not enough in today's world?",
+    "options": [
+      "Employees choose poor passwords",
+      "Employees choose strong passwords",
+      "Employee passwords are always secure",
+      "Employees dislike using passwords"
+    ],
+    "answer": "Employees choose poor passwords"
+  },
+  {
+    "question": "Why might it be a bad policy to set up permissions individually instead of using an access control methodology?",
+    "options": [
+      "It is harder to manage.",
+      "It allows for more control.",
+      "It is easier to manage.",
+      "It allows for less control."
+    ],
+    "answer": "It is harder to manage."
+  },
+  {
+    "question": "A CISO wants to enhance identity and access management by adding an extra layer through multiple verification methods or tying authentication to a geographic area. (Select the two best options.)",
+    "options": [
+      "Increase password length",
+      "Enforce multifactor authentication",
+      "Enable password history",
+      "Enable location-based authentication"
+    ],
+    "answer": [
+      "Enforce multifactor authentication",
+      "Enable location-based authentication"
+    ]
+  },
+  {
+    "question": "An employee is having difficulty remembering a complex password and is looking for a more secure and memorable alternative. What type of credential would be the best recommendation?",
+    "options": [
+      "A username",
+      "A short numeric PIN",
+      "A longer password with more characters",
+      "A device-specific PIN with any characters and length"
+    ],
+    "answer": "A device-specific PIN with any characters and length"
+  },
+  {
+    "question": "An employee travels out of the country for work but still needs to access the company's shared drive. What would IT need to set up on the employee's computer?",
+    "options": [
+      "Virtual private network",
+      "Discretionary access control",
+      "Multifactor authentication",
+      "Mandatory access control"
+    ],
+    "answer": "Virtual private network"
+  },
+  {
+    "question": "An employee traveling in Europe for vacation cannot access their work email. Which policy does the company use?",
+    "options": [
+      "Location-based authentication",
+      "Password age",
+      "Password management",
+      "Multifactor authentication"
+    ],
+    "answer": "Location-based authentication"
+  },
+  {
+    "question": "A real estate investment firm wants to implement Single Sign-On (SSO) using the eXtensible Markup Language (XML) standard. What solution does this vendor use for SSO?",
+    "options": [
+      "LDAP",
+      "VPN",
+      "SAML",
+      "LSASS"
+    ],
+    "answer": "SAML"
+  },
+  {
+    "question": "A network administrator discovered improperly managed permissions on shared drives. Which control type should be used to give access determined by job role?",
+    "options": [
+      "Role-based access control",
+      "Discretionary access control",
+      "Mandatory access control",
+      "Multifactor authentication"
+    ],
+    "answer": "Role-based access control"
+  }
+]
