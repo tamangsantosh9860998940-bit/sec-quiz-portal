@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sec+ Custom Domain Quiz Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function App() {
+            const [view, setView] = React.useState('dashboard'); // 'dashboard', 'creator', 'quiz'
+            const [quizzes, setQuizzes] = React.useState([
+                {
+                    id: 1,
+                    title: 'CompTIA Security+ Core Concepts',
+                    description: 'Practice questions covering CIA triad, access control models, and cryptography basics.',
+                    questions: [
+                        {
+                            question: 'Which of the following security principles ensures that sensitive information is accessed only by an authorized person?',
+                            options: ['Confidentiality', 'Integrity', 'Availability', 'Non-repudiation'],
+                            correct: 0,
+                            explanation: 'Confidentiality ensures that data is hidden from unauthorized entities.'
+                        },
+                        {
+                            question: 'Which cryptographic algorithm is a widely used symmetric block cipher with a block size of 128 bits?',
+                            options: ['RSA', 'AES', 'SHA-256', 'Diffie-Hellman'],
+                            correct: 1,
+                            explanation: 'AES (Advanced Encryption Standard) is a symmetric block cipher standard.'
+                        }
+                    ]
+                }
+            ]);
+
+            const [activeQuiz, setActiveQuiz] = React.useState(null);
+            const [currentIndex, setCurrentIndex] = React.useState(0);
+            const [selectedOption, setSelectedOption] = React.useState(null);
+            const [score, setScore] = React.useState(0);
+            const [showResults, setShowResults] = React.useState(false);
+
+            // Creator state
+            const [newTitle, setNewTitle] = React.useState('');
+            const [newDesc, setNewDesc] = React.useState('');
+            const [rawText, setRawText] = React.useState('');
+
+            const handleParseAndCreate = (e) => {
+                e.preventDefault();
+                if (!newTitle.trim() || !rawText.trim()) return;
+
+                // Simple parser split by line or Q&A format
+                // Example format expected: 
+                // Q: Question text here?
+                // A) Option 1
+                // B) Option 2 (Correct)
+                // C) Option 3
+                // D) Option 4
+                const blocks = rawText.split(/\n\s*\n/);
+                const parsedQuestions = [];
+
+                blocks.forEach(block => {
+                    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+                    if (lines.length >= 5) {
+                        const qText = lines[0].replace(/^(Q[:\.]?\s*)/i, '');
+                        const options = [];
+                        let correctIdx = 0;
+
+                        for (let i = 1; i < lines.length; i++) {
+                            let optText = lines[i].replace(/^([A-Da-d][\.\)]\s*)/i, '');
+                            if (optText.includes('(Correct)') || optText.includes('*')) {
+                                correctIdx = options.length;
+                                optText = optText.replace(/\(Correct\)/gi, '').replace(/\*/g, '').trim();
+                            }
+                            options.push(optText);
+                        }
+
+                        if (options.length >= 2) {
+                            parsedQuestions.push({
+                                question: qText,
+                                options: options.slice(0, 4),
+                                correct: correctIdx,
+                                explanation: 'Parsed from your uploaded Sec+ notes.'
+                            });
+                        }
+                    }
+                });
+
+                // Fallback demo question if parsing didn't match strict format
+                if (parsedQuestions.length === 0) {
+                    parsedQuestions.push({
+                        question: 'Sample Question from: ' + newTitle,
+                        options: ['Option A', 'Option B', 'Option C', 'Option D'],
+                        correct: 0,
+                        explanation: 'Please format questions with Q: and options as A), B), C), D).'
+                    });
+                }
+
+                const newQuizObj = {
+                    id: Date.now(),
+                    title: newTitle,
+                    description: newDesc || 'Custom uploaded Sec+ quiz pack.',
+                    questions: parsedQuestions
+                };
+
+                setQuizzes([...quizzes, newQuizObj]);
+                setNewTitle('');
+                setNewDesc('');
+                setRawText('');
+                setView('dashboard');
+            };
+
+            const startQuiz = (quiz) => {
+                setActiveQuiz(quiz);
+                setCurrentIndex(0);
+                setSelectedOption(null);
+                setScore(0);
+                setShowResults(false);
+                setView('quiz');
+            };
+
+            const handleAnswer = (idx) => {
+                setSelectedOption(idx);
+            };
+
+            const nextQuestion = () => {
+                if (selectedOption === activeQuiz.questions[currentIndex].correct) {
+                    setScore(score + 1);
+                }
+                if (currentIndex + 1 < activeQuiz.questions.length) {
+                    setCurrentIndex(currentIndex + 1);
+                    setSelectedOption(null);
+                } else {
+                    setShowResults(true);
+                }
+            };
+
+            return (
+                <div className="max-w-4xl mx-auto px-4 py-8">
+                    {/* Header */}
+                    <header className="flex justify-between items-center mb-10 border-b border-slate-800 pb-4">
+                        <div>
+                            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                                Sec+ Domain Portal
+                            </h1>
+                            <p className="text-sm text-slate-400">Host your own custom quiz portal effortlessly</p>
+                        </div>
+                        <div className="space-x-3">
+                            <button 
+                                onClick={() => setView('dashboard')}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${view === 'dashboard' ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-300 hover:bg-slate-800'}`}
+                            >
+                                All Quizzes
+                            </button>
+                            <button 
+                                onClick={() => setView('creator')}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${view === 'creator' ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-300 hover:bg-slate-800'}`}
+                            >
+                                + Upload / Create Quiz
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* View 1: Dashboard */}
+                    {view === 'dashboard' && (
+                        <div>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-lg font-semibold text-slate-200">Available Quiz Modules</h2>
+                                <span className="text-xs bg-slate-900 px-3 py-1 rounded-full text-slate-400 border border-slate-800">
+                                    {quizzes.length} Active Pack{quizzes.length !== 1 && 's'}
+                                </span>
+                            </div>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                {quizzes.map((q) => (
+                                    <div key={q.id} className="bg-slate-900 border border-slate-800 p-5 rounded-xl hover:border-slate-700 transition flex flex-col justify-between">
+                                        <div>
+                                            <h3 className="font-semibold text-white text-lg mb-1">{q.title}</h3>
+                                            <p className="text-sm text-slate-400 mb-4">{q.description}</p>
+                                        </div>
+                                        <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-800/80">
+                                            <span className="text-xs text-blue-400 font-medium">{q.questions.length} Questions</span>
+                                            <button 
+                                                onClick={() => startQuiz(q)}
+                                                className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-medium transition"
+                                            >
+                                                Launch Quiz
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* View 2: Creator */}
+                    {view === 'creator' && (
+                        <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-2xl mx-auto">
+                            <h2 className="text-xl font-semibold mb-2">Upload Sec+ Notes & Questions</h2>
+                            <p className="text-xs text-slate-400 mb-6">Paste your study notes or questions below. Format each question starting with "Q:" followed by options marked with A), B), C), D).</p>
+                            
+                            <form onSubmit={handleParseAndCreate} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-300 mb-1">Quiz Title</label>
+                                    <input 
+                                        type="text" 
+                                        required
+                                        placeholder="e.g., Sec+ Domain 1: Threats & Vulnerabilities"
+                                        value={newTitle}
+                                        onChange={(e) => setNewTitle(e.target.value)}
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-300 mb-1">Description</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Brief overview of what this covers..."
+                                        value={newDesc}
+                                        onChange={(e) => setNewDesc(e.target.value)}
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-300 mb-1">Questions Content (Paste Notes)</label>
+                                    <textarea 
+                                        rows="8"
+                                        required
+                                        placeholder={`Q: What type of malware locks system files until a ransom is paid?
+A) Spyware
+B) Ransomware (Correct)
+C) Trojan
+D) Adware`}
+                                        value={rawText}
+                                        onChange={(e) => setRawText(e.target.value)}
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white font-mono focus:outline-none focus:border-blue-500"
+                                    ></textarea>
+                                </div>
+                                <button 
+                                    type="submit"
+                                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-lg transition text-sm"
+                                >
+                                    Generate & Publish Quiz
+                                </button>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* View 3: Quiz Session */}
+                    {view === 'quiz' && activeQuiz && (
+                        <div className="max-w-xl mx-auto bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                            {!showResults ? (
+                                <div>
+                                    <div className="flex justify-between items-center mb-6 text-xs text-slate-400">
+                                        <span>{activeQuiz.title}</span>
+                                        <span>Question {currentIndex + 1} of {activeQuiz.questions.length}</span>
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-white mb-6">
+                                        {activeQuiz.questions[currentIndex].question}
+                                    </h3>
+                                    <div className="space-y-3 mb-6">
+                                        {activeQuiz.questions[currentIndex].options.map((opt, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleAnswer(idx)}
+                                                className={`w-full text-left p-3.5 rounded-xl border text-sm transition ${selectedOption === idx ? 'bg-blue-600/20 border-blue-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'}`}
+                                            >
+                                                {opt}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button 
+                                        disabled={selectedOption === null}
+                                        onClick={nextQuestion}
+                                        className={`w-full py-3 rounded-xl font-medium text-sm transition ${selectedOption === null ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
+                                    >
+                                        {currentIndex + 1 === activeQuiz.questions.length ? 'Finish Quiz' : 'Next Question'}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="text-center py-8">
+                                    <h3 className="text-2xl font-bold text-white mb-2">Quiz Completed! 🎉</h3>
+                                    <p className="text-slate-400 text-sm mb-6">You scored {score} out of {activeQuiz.questions.length}</p>
+                                    <button 
+                                        onClick={() => setView('dashboard')}
+                                        className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl text-sm font-medium transition"
+                                    >
+                                        Back to Dashboard
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
+```eof
