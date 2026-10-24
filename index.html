@@ -44,6 +44,29 @@
                 }
             ]);
 
+            // Automatically load questions.json on startup
+            React.useEffect(() => {
+                fetch('questions.json')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (Array.isArray(data) && data.length > 0) {
+                            setQuizzes(prevQuizzes => [
+                                {
+                                    id: Date.now(),
+                                    title: 'Sec+ Full 1,000+ Question Bank',
+                                    description: 'All loaded questions fetched automatically from your uploaded JSON file.',
+                                    questions: data
+                                },
+                                ...prevQuizzes
+                            ]);
+                        }
+                    })
+                    .catch(error => console.error('Error loading questions.json:', error));
+            }, []);
+
             const [activeQuiz, setActiveQuiz] = React.useState(null);
             const [currentIndex, setCurrentIndex] = React.useState(0);
             const [selectedOption, setSelectedOption] = React.useState(null);
@@ -59,23 +82,16 @@
                 e.preventDefault();
                 if (!newTitle.trim() || !rawText.trim()) return;
 
-                // Simple parser split by line or Q&A format
-                // Example format expected: 
-                // Q: Question text here?
-                // A) Option 1
-                // B) Option 2 (Correct)
-                // C) Option 3
-                // D) Option 4
                 const blocks = rawText.split(/\n\s*\n/);
                 const parsedQuestions = [];
-
+                
                 blocks.forEach(block => {
                     const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
                     if (lines.length >= 5) {
                         const qText = lines[0].replace(/^(Q[:\.]?\s*)/i, '');
                         const options = [];
                         let correctIdx = 0;
-
+                        
                         for (let i = 1; i < lines.length; i++) {
                             let optText = lines[i].replace(/^([A-Da-d][\.\)]\s*)/i, '');
                             if (optText.includes('(Correct)') || optText.includes('*')) {
@@ -84,19 +100,18 @@
                             }
                             options.push(optText);
                         }
-
+                        
                         if (options.length >= 2) {
                             parsedQuestions.push({
                                 question: qText,
                                 options: options.slice(0, 4),
                                 correct: correctIdx,
-                                explanation: 'Parsed from your uploaded Sec+ notes.'
+                                explanation: 'Parsed from your uploaded notes.'
                             });
                         }
                     }
                 });
 
-                // Fallback demo question if parsing didn't match strict format
                 if (parsedQuestions.length === 0) {
                     parsedQuestions.push({
                         question: 'Sample Question from: ' + newTitle,
@@ -109,7 +124,7 @@
                 const newQuizObj = {
                     id: Date.now(),
                     title: newTitle,
-                    description: newDesc || 'Custom uploaded Sec+ quiz pack.',
+                    description: newDesc || 'Custom uploaded quiz pack.',
                     questions: parsedQuestions
                 };
 
@@ -157,13 +172,13 @@
                         </div>
                         <div className="space-x-3">
                             <button 
-                                onClick={() => setView('dashboard')}
+                                onClick={() => setView('dashboard')} 
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${view === 'dashboard' ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-300 hover:bg-slate-800'}`}
                             >
                                 All Quizzes
                             </button>
                             <button 
-                                onClick={() => setView('creator')}
+                                onClick={() => setView('creator')} 
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${view === 'creator' ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-300 hover:bg-slate-800'}`}
                             >
                                 + Upload / Create Quiz
@@ -190,7 +205,7 @@
                                         <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-800/80">
                                             <span className="text-xs text-blue-400 font-medium">{q.questions.length} Questions</span>
                                             <button 
-                                                onClick={() => startQuiz(q)}
+                                                onClick={() => startQuiz(q)} 
                                                 className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-medium transition"
                                             >
                                                 Launch Quiz
@@ -207,46 +222,41 @@
                         <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-2xl mx-auto">
                             <h2 className="text-xl font-semibold mb-2">Upload Sec+ Notes & Questions</h2>
                             <p className="text-xs text-slate-400 mb-6">Paste your study notes or questions below. Format each question starting with "Q:" followed by options marked with A), B), C), D).</p>
-                            
                             <form onSubmit={handleParseAndCreate} className="space-y-4">
                                 <div>
                                     <label className="block text-xs font-medium text-slate-300 mb-1">Quiz Title</label>
                                     <input 
                                         type="text" 
-                                        required
-                                        placeholder="e.g., Sec+ Domain 1: Threats & Vulnerabilities"
-                                        value={newTitle}
-                                        onChange={(e) => setNewTitle(e.target.value)}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500"
+                                        required 
+                                        placeholder="e.g., Sec+ Domain 1: Threats & Vulnerabilities" 
+                                        value={newTitle} 
+                                        onChange={(e) => setNewTitle(e.target.value)} 
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500" 
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-slate-300 mb-1">Description</label>
                                     <input 
                                         type="text" 
-                                        placeholder="Brief overview of what this covers..."
-                                        value={newDesc}
-                                        onChange={(e) => setNewDesc(e.target.value)}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500"
+                                        placeholder="Brief overview of what this covers..." 
+                                        value={newDesc} 
+                                        onChange={(e) => setNewDesc(e.target.value)} 
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500" 
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-slate-300 mb-1">Questions Content (Paste Notes)</label>
                                     <textarea 
-                                        rows="8"
-                                        required
-                                        placeholder={`Q: What type of malware locks system files until a ransom is paid?
-A) Spyware
-B) Ransomware (Correct)
-C) Trojan
-D) Adware`}
-                                        value={rawText}
-                                        onChange={(e) => setRawText(e.target.value)}
+                                        rows="8" 
+                                        required 
+                                        placeholder={`Q: What type of malware locks system files until a ransom is paid?\nA) Spyware\nB) Ransomware (Correct)\nC) Trojan\nD) Adware`} 
+                                        value={rawText} 
+                                        onChange={(e) => setRawText(e.target.value)} 
                                         className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white font-mono focus:outline-none focus:border-blue-500"
                                     ></textarea>
                                 </div>
                                 <button 
-                                    type="submit"
+                                    type="submit" 
                                     className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-lg transition text-sm"
                                 >
                                     Generate & Publish Quiz
@@ -269,9 +279,9 @@ D) Adware`}
                                     </h3>
                                     <div className="space-y-3 mb-6">
                                         {activeQuiz.questions[currentIndex].options.map((opt, idx) => (
-                                            <button
-                                                key={idx}
-                                                onClick={() => handleAnswer(idx)}
+                                            <button 
+                                                key={idx} 
+                                                onClick={() => handleAnswer(idx)} 
                                                 className={`w-full text-left p-3.5 rounded-xl border text-sm transition ${selectedOption === idx ? 'bg-blue-600/20 border-blue-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'}`}
                                             >
                                                 {opt}
@@ -279,8 +289,8 @@ D) Adware`}
                                         ))}
                                     </div>
                                     <button 
-                                        disabled={selectedOption === null}
-                                        onClick={nextQuestion}
+                                        disabled={selectedOption === null} 
+                                        onClick={nextQuestion} 
                                         className={`w-full py-3 rounded-xl font-medium text-sm transition ${selectedOption === null ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
                                     >
                                         {currentIndex + 1 === activeQuiz.questions.length ? 'Finish Quiz' : 'Next Question'}
@@ -291,7 +301,7 @@ D) Adware`}
                                     <h3 className="text-2xl font-bold text-white mb-2">Quiz Completed! 🎉</h3>
                                     <p className="text-slate-400 text-sm mb-6">You scored {score} out of {activeQuiz.questions.length}</p>
                                     <button 
-                                        onClick={() => setView('dashboard')}
+                                        onClick={() => setView('dashboard')} 
                                         className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl text-sm font-medium transition"
                                     >
                                         Back to Dashboard
@@ -308,4 +318,3 @@ D) Adware`}
     </script>
 </body>
 </html>
-```eof
